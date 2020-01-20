@@ -1,0 +1,91 @@
+PRAGMA foreign_keys = ON;
+
+DROP TABLE Writers;
+DROP TABLE Readers;
+DROP TABLE Files;
+DROP TABLE INodes;
+DROP TABLE Members;
+DROP TABLE Loggables;
+DROP TABLE Users;
+
+CREATE TABLE Users (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(64) NOT NULL UNIQUE,
+    ownerId INTEGER NOT NULL,
+    FOREIGN KEY (ownerId) REFERENCES Users(id)
+);
+
+CREATE TABLE Loggables (
+    id INTEGER NOT NULL PRIMARY KEY,
+    password VARCHAR(255) NOT NULL,
+    FOREIGN KEY (id) REFERENCES Users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Members (
+    groupId INTEGER NOT NULL,
+    memberId INTEGER NOT NULL,
+    PRIMARY KEY (groupId, memberId),
+    FOREIGN KEY (groupId) REFERENCES Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (memberId) REFERENCES Users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE INodes (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(64),
+    ownerId INTEGER NOT NULL REFERENCES Users(id),
+    parentId INTEGER NOT NULL REFERENCES INodes(id)
+);
+
+CREATE TABLE Files (
+    id INTEGER NOT NULL PRIMARY KEY REFERENCES INodes(id),
+    path VARCHAR(255)
+);
+
+CREATE TABLE Readers (
+    inodeId INTEGER NOT NULL REFERENCES INodes(id),
+    userId INTEGER NOT NULL REFERENCES Users(id),
+    PRIMARY KEY (inodeId, userId)
+);
+
+CREATE TABLE Writers (
+    inodeId INTEGER NOT NULL REFERENCES INodes(id),
+    userId INTEGER NOT NULL REFERENCES Users(id),
+    PRIMARY KEY (inodeId, userId)
+);
+
+CREATE TRIGGER IF NOT EXISTS insert_users
+   AFTER INSERT
+   ON Users
+BEGIN
+    INSERT INTO Members VALUES (NEW.id, NEW.id);
+END;
+
+CREATE TRIGGER IF NOT EXISTS delete_users
+   AFTER DELETE
+   ON Users
+BEGIN
+    DELETE FROM Users WHERE ownerID NOT IN (SELECT id FROM Users);
+    DELETE FROM Loggables WHERE id NOT IN (SELECT id FROM Users);
+    DELETE FROM Members WHERE groupId NOT IN (SELECT id FROM Users);
+    DELETE FROM Members WHERE memberId NOT IN (SELECT id FROM Users);
+    DELETE FROM Readers WHERE userId NOT IN (SELECT id FROM Users);
+    DELETE FROM Writers WHERE userId NOT IN (SELECT id FROM Users);
+END;
+
+CREATE TRIGGER IF NOT EXISTS delete_inodes
+   AFTER DELETE
+   ON INodes
+BEGIN
+    DELETE FROM INodes WHERE parentId NOT IN (SELECT id FROM INodes);
+    DELETE FROM Files WHERE id NOT IN (SELECT id FROM INodes);
+    DELETE FROM Readers WHERE groupId NOT IN (SELECT id FROM INodes);
+    DELETE FROM Writers WHERE memberId NOT IN (SELECT id FROM INodes);
+END;
+
+CREATE TRIGGER IF NOT EXISTS insert_inodes
+   AFTER INSERT
+   ON Inodes
+BEGIN
+    INSERT INTO Readers VALUES (NEW.id, NEW.ownerId);
+    INSERT INTO Writers VALUES (NEW.id, NEW.ownerId);
+END;
