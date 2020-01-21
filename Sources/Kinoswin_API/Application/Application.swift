@@ -1,11 +1,9 @@
 import Kitura
-import KituraOpenAPI
 
 class Application {
     let router = Router()
 
     init() {
-
         initFileRoutes(app: self)
         initINodeRoutes(app: self)
         initLoggableRoutes(app: self)

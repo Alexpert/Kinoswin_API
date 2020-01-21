@@ -1,0 +1,15 @@
+{
+    "Logger" : {
+        "types" : ["info", "error"]
+    },
+    "Application" : {
+        "port" : 9090
+    },
+    "Database" : {
+        "path" : "Database/database.db",
+        "create" : "Database/create_db.sql"
+    },
+    "Data" : {
+        "owner" : "Alexpert"
+    }
+}

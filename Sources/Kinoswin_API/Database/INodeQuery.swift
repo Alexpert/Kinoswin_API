@@ -28,7 +28,7 @@ class INodeQuery {
     }
 
     class func insert(iNode: INode) -> Insert {
-        return iNodes.insert(name <- iNode.name, ownerId <- iNode.ownerId)
+        return iNodes.insert(name <- iNode.name, ownerId <- iNode.ownerId, parentId <- iNode.parentId)
     }
 
     class func delete(iNode: INode) -> Delete {

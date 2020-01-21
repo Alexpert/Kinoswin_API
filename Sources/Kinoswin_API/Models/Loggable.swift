@@ -42,6 +42,7 @@ public class Loggable: User {
         let user = try db.run(UserQuery.insert(user: self as User))
         self.id = user
         try db.run(LoggableQuery.insert(user: self))
+        //try db.run(INodeQuery.insert(iNode: Node(id: 0, name: self.name, ownerId: self.id, parentId: 1)))
     }
 
     override func delete() throws {

@@ -82,10 +82,10 @@ func initINodeRoutes(app: Application) {
     
     app.router.post("/inode") { request, response, next in
         do {
-            let user = try request.read(as: INode.self)
-            print(user)
-            try user.insert()
-            response.send(user)
+            let inode = try request.read(as: INode.self)
+            print(inode)
+            try inode.insert()
+            response.send(inode)
         } catch {
             let _ = response.send(status: .badRequest)
         }
