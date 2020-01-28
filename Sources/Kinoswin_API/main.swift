@@ -1,11 +1,11 @@
 import Foundation
+import SwiftLogger
 
-let config = try! Configuration.get()
-print(config)
+let config = ConfigurationParser.get()
+
+let logger = SwiftLogger(path: "Logs/startup.log", domain: "main")
+logger.enableLogType(type: LogType.INFO)
+logger.log(type: LogType.INFO, header: "startup", content: "starting at port: \(config.application.port)")
 
 let app = Application()
 app.run()
-
-// let logger = SwiftLogger(path: "logger.log", domain: "main")
-// logger.enableLogType(LogType.INFO)
-// logger.log(LogType.INFO, "test", "riydfibudfib")

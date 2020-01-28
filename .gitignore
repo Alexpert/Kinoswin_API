@@ -4,3 +4,4 @@
 /*.xcodeproj
 xcuserdata/
 /Database/*.db
+/Logs/*.log
