@@ -1,3 +1,4 @@
 # Kinoswin_API
 
-A description of this package.
+Backend for Kinoswin, a private cloud and streaming service.
+Coming SOON(ish)
